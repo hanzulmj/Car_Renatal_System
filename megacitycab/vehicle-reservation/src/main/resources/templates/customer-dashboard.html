@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+	
+	<!-- Custom CSS -->
+	<style>
+	    body {
+	        background-color: #f8f9fa;
+	        padding: 20px;
+	    }
+
+	    .container {
+	        max-width: 1200px;
+	        margin: 0 auto;
+	        background: white;
+	        padding: 20px;
+	        border-radius: 10px;
+	        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	    }
+
+	    .btn-primary {
+	        background-color: #f9ca24;
+	        border: none;
+	    }
+
+	    .btn-primary:hover {
+	        background-color: #f6e58d;
+	    }
+
+	    .btn-success {
+	        background-color: #f0932b;
+	        border: none;
+	    }
+
+	    .btn-success:hover {
+	        background-color: #ffbe76;
+	    }
+
+	    .modal-content {
+	        border-radius: 10px;
+	    }
+
+	    .table {
+	        margin-top: 20px;
+	    }
+
+	    .table th, .table td {
+	        vertical-align: middle;
+	    }
+
+	    .table thead th {
+	        background-color: #f9ca24;
+	        color: white;
+	    }
+
+	    .table tbody tr:hover {
+	        background-color: #f1f1f1;
+	    }
+	</style>
+</head>
+<body>
+    <div class="container">
+		<!-- Logout Button -->
+		<button id="logoutBtn" class="btn btn-danger logout-btn">
+		     <i class="bi bi-box-arrow-right"></i> Logout
+		</button>
+        <h1 class="text-center mb-4">Welcome to the Customer Dashboard</h1>
+
+        <h2 class="text-center mb-3">Available Cars</h2>
+
+        <!-- Table for displaying available cars -->
+		<table class="table table-striped table-hover">
+		    <thead>
+		        <tr>
+		            <th>Car Model</th>
+		            <th>Registration Number</th>
+		            <th>Driver Name</th>
+		            <th>Price</th>
+		            <th>Available</th>
+		            <th>Action</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        <th:block th:each="car : ${cars}">
+		            <tr>
+		                <td th:text="${car.model}"></td>
+		                <td th:text="${car.registrationNumber}"></td>
+		                <td th:text="${car.driver.name}"></td>
+		                <td th:text="${car.price}"></td>
+		                <td>
+		                    <span th:if="${car.available}" class="badge bg-success">Yes</span>
+		                    <span th:unless="${car.available}" class="badge bg-danger">No</span>
+		                </td>
+		                <td>
+		                    <button class="btn btn-primary btn-sm book-btn"
+		                        th:data-car-id="${car.id}"
+		                        th:data-car-model="${car.model}"
+		                        th:data-car-registration="${car.registrationNumber}"
+		                        th:data-car-price="${car.price}"
+		                        th:disabled="${!car.available}">
+		                        Book Now
+		                    </button>
+		                </td>
+		            </tr>
+		        </th:block>
+		    </tbody>
+		</table>
+
+		<!-- Booking Modal -->
+		<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="bookingModalLabel">Book a Car</h5>
+		                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body">
+		                <form id="bookingForm">
+		                    <input type="hidden" id="carId">
+		                    <div class="mb-3">
+		                        <label class="form-label">Car Model:</label>
+		                        <input type="text" id="carModel" class="form-control" readonly>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Registration Number:</label>
+		                        <input type="text" id="carRegistration" class="form-control" readonly>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Driver Name:</label>
+		                        <input type="text" id="driverName" class="form-control" readonly>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Price:</label>
+		                        <input type="text" id="carPrice" class="form-control" readonly>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Name:</label>
+		                        <input type="text" id="customerName" class="form-control" required>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Address:</label>
+		                        <input type="text" id="customerAddress" class="form-control" required>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Phone:</label>
+		                        <input type="text" id="customerPhone" class="form-control" required>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">NIC:</label>
+		                        <input type="text" id="customerNIC" class="form-control" required>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label class="form-label">Destination:</label>
+		                        <input type="text" id="destination" class="form-control" required>
+		                    </div>
+		                </form>
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		                <button type="button" class="btn btn-success" id="confirmBooking">Confirm Booking</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		
+		<!-- Toast Container -->
+		<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3">
+		    <!-- Success Toast -->
+		    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+		        <div class="toast-header">
+		            <strong class="me-auto">Success</strong>
+		            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		        </div>
+		        <div class="toast-body">
+		            Booking confirmed successfully!
+		        </div>
+		    </div>
+
+		    <!-- Error Toast -->
+		    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+		        <div class="toast-header">
+		            <strong class="me-auto">Error</strong>
+		            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		        </div>
+		        <div class="toast-body">
+		            Something went wrong! Please try again.
+		        </div>
+		    </div>
+		</div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- Add jsPDF library -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	
+    <script>
+        // Logout button functionality
+        document.getElementById("logoutBtn").onclick = function() {
+            window.location.href = '/logout';
+        };
+		
+		// Load the cars into the table
+		function loadCars() {
+		        fetch('/customer/getCars') 
+		            .then(response => response.json())
+		            .then(data => {
+		                const tableBody = document.querySelector("tbody");
+		                tableBody.innerHTML = ""; 
+
+		                data.forEach(car => {
+		                    const availableBadge = car.available ?
+		                        `<span class="badge bg-success">Yes</span>` :
+		                        `<span class="badge bg-danger">No</span>`;
+
+								const bookButton = car.available ?
+								    `<button class="btn btn-primary btn-sm book-btn" data-car-id="${car.id}" 
+								    data-car-model="${car.model}" data-car-registration="${car.registrationNumber}"
+								    data-car-driver="${car.driver ? car.driver.name : 'N/A'}" 
+								    data-car-price="${car.price}">Book Now</button>` :
+								    `<button class="btn btn-secondary btn-sm" disabled>Unavailable</button>`;
+
+		                    const carRow = `<tr>
+		                        <td>${car.model}</td>
+		                        <td>${car.registrationNumber}</td>
+		                        <td>${car.driver ? car.driver.name : 'N/A'}</td>
+								<td>${car.price}</td>
+		                        <td>${availableBadge}</td>
+		                        <td>${bookButton}</td>
+		                    </tr>`;
+
+		                    tableBody.insertAdjacentHTML('beforeend', carRow);
+		                });
+
+		                // Attach event listener to open the modal
+						document.querySelectorAll(".book-btn").forEach(button => {
+						    button.addEventListener("click", function () {
+						        document.getElementById("carId").value = this.getAttribute("data-car-id");
+						        document.getElementById("carModel").value = this.getAttribute("data-car-model");
+						        document.getElementById("carRegistration").value = this.getAttribute("data-car-registration");
+						        document.getElementById("driverName").value = this.getAttribute("data-car-driver");  // Set driver name
+						        document.getElementById("carPrice").value = this.getAttribute("data-car-price");  // Set price
+
+						        const modal = new bootstrap.Modal(document.getElementById("bookingModal"));
+						        modal.show();
+						    });
+						});
+
+		            })
+		            .catch(error => console.error('Error loading cars:', error));
+		    }
+
+		    // Function to handle booking
+			document.getElementById("confirmBooking").addEventListener("click", function () {
+			    const carId = document.getElementById("carId").value;
+			    const carModel = document.getElementById("carModel").value;
+			    const carRegistration = document.getElementById("carRegistration").value;
+			    const carPrice = document.getElementById("carPrice").value;
+			    const customerName = document.getElementById("customerName").value;
+			    const customerAddress = document.getElementById("customerAddress").value;
+			    const customerPhone = document.getElementById("customerPhone").value;
+			    const customerNIC = document.getElementById("customerNIC").value;
+			    const destination = document.getElementById("destination").value;
+
+			    if (!customerName || !customerAddress || !customerPhone || !customerNIC || !destination) {
+			        showToast('error', 'Please fill in all details.');
+			        return;
+			    }
+
+			    fetch(`/customer/bookCar/${carId}`, {
+			        method: "POST",
+			        headers: { "Content-Type": "application/json" },
+			        body: JSON.stringify({
+			            name: customerName,
+			            address: customerAddress,
+			            phone: customerPhone,
+			            nic: customerNIC,
+			            destination: destination
+			        })
+			    })
+			    .then(response => response.text())  // Expecting a string message
+			    .then(data => {
+			        if (data.includes("successfully")) {
+			            // Show success toast
+			            showToast('success', 'Booking confirmed successfully!');
+			            
+			            // Generate PDF
+			            generatePDF(carModel, carRegistration, carPrice, customerName, customerAddress, customerPhone, customerNIC, destination);
+
+			            document.getElementById("bookingForm").reset();
+			            loadCars(); // Reload the table
+			            bootstrap.Modal.getInstance(document.getElementById("bookingModal")).hide();
+			        } else {
+			            // Show error toast
+			            showToast('error', 'Something went wrong! Please try again.');
+			        }
+			    })
+			    .catch(error => {
+			        console.error("Error booking car:", error);
+			        showToast('error', 'Something went wrong! Please try again.');
+			    });
+			});
+
+			// Function to show toast
+			function showToast(type, message) {
+			    const toastElement = type === 'success' ? document.getElementById("successToast") : document.getElementById("errorToast");
+			    const toastBody = toastElement.querySelector(".toast-body");
+			    toastBody.textContent = message;
+
+			    const toast = new bootstrap.Toast(toastElement);
+			    toast.show();
+			}
+
+			// Function to generate PDF
+			function generatePDF(carModel, carRegistration, carPrice, customerName, customerAddress, customerPhone, customerNIC, destination) {
+			    const { jsPDF } = window.jspdf;
+			    const doc = new jsPDF();
+
+			    // Add content to the PDF
+			    doc.setFontSize(18);
+			    doc.text("Booking Confirmation", 10, 20);
+			    doc.setFontSize(12);
+			    doc.text(`Car Model: ${carModel}`, 10, 30);
+			    doc.text(`Registration Number: ${carRegistration}`, 10, 40);
+			    doc.text(`Price: $${carPrice}`, 10, 50);
+			    doc.text(`Customer Name: ${customerName}`, 10, 60);
+			    doc.text(`Address: ${customerAddress}`, 10, 70);
+			    doc.text(`Phone: ${customerPhone}`, 10, 80);
+			    doc.text(`NIC: ${customerNIC}`, 10, 90);
+			    doc.text(`Destination: ${destination}`, 10, 100);
+
+			    // Save the PDF
+			    doc.save("booking_confirmation.pdf");
+			}
+		// Call the loadCars function when the page loads
+		document.addEventListener("DOMContentLoaded", loadCars);
+
+    </script>
+</body>
+</html>

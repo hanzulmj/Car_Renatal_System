@@ -1,7 +1,7 @@
-##Mega City Cab Management System
+##Chigo City Cab Management System
 
 
-This project is an online car rental and reservation system for Mega City Cab.
+This project is an online car rental and reservation system for ChigoCity Cab.
 
 #Technologies Used
 

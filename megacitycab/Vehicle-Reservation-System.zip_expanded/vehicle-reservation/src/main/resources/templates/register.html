@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e3f2fd; /* Light Blue Background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .register-container {
+            background-color: #ffffff; /* White Card */
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-container h1 {
+            text-align: center;
+            color: #ff6f00; /* Orange */
+            margin-bottom: 20px;
+        }
+
+        .register-container label {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .register-container input, .register-container select {
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #b0bec5; /* Light Gray-Blue */
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background-color: #f5f5f5; /* Soft Gray */
+        }
+
+        .register-container input:focus, .register-container select:focus {
+            border-color: #ff6f00; /* Orange */
+            outline: none;
+            background-color: #ffffff;
+        }
+
+        .register-container select {
+            appearance: none;
+            background-color: #f5f5f5;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="none" stroke="#ff6f00" stroke-width="2" d="M2 4l4 4 4-4"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+        }
+
+        .register-container button {
+            background-color: #ff6f00; /* Orange */
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s ease-in-out;
+        }
+
+        .register-container button:hover {
+            background-color: #e65100; /* Darker Orange */
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: #d32f2f; /* Red */
+            font-size: 14px;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #ff6f00; /* Orange */
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .login-link a:hover {
+            color: #e65100; /* Darker Orange */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Register</h1>
+        <form th:action="@{/register}" method="post">
+            <label>Username:</label>
+            <input type="text" name="username" required>
+
+            <label>Password:</label>
+            <input type="password" name="password" required>
+
+            <label>Role:</label>
+            <select name="role">
+                <option value="ADMIN">Admin</option>
+                <option value="CUSTOMER">Customer</option>
+            </select>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <!-- Display error message if present -->
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+        <div class="login-link">
+            <a th:href="@{/login}">Already have an account? Login here</a>
+        </div>
+    </div>
+</body>
+</html>
